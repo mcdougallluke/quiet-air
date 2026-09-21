@@ -1,0 +1,28 @@
+{
+	"schemaVersion": 1,
+	"id": "quiet-air",
+	"version": "${version}",
+	"name": "Quiet Air",
+	"description": "Server-side mod that silences the harmless 'standing on air - force-sending blocks below' console message.",
+	"authors": [
+		"lukeeIRL"
+	],
+	"contact": {
+		"homepage": "https://lukemcd.dev",
+		"sources": "https://github.com/mcdougallluke/quiet-air",
+		"issues": "https://github.com/mcdougallluke/quiet-air/issues"
+	},
+	"license": "MIT",
+	"icon": "assets/quiet-air/icon.png",
+	"environment": "server",
+	"entrypoints": {
+		"main": [
+			"dev.lukemcd.quietair.QuietAir"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25"
+	}
+}
