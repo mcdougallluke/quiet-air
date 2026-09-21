@@ -1,0 +1,47 @@
+# Builds the mod and publishes a GitHub Release when a version tag is pushed.
+#
+#   git tag v1.0.0
+#   git push origin v1.0.0
+#
+# The tag must match `version` in gradle.properties (with a leading "v").
+
+name: release
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v6
+      - name: validate gradle wrapper
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+      - name: check tag matches gradle.properties version
+        run: |
+          version=$(grep '^version=' gradle.properties | cut -d= -f2 | tr -d '\r')
+          if [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match version=$version in gradle.properties (expected v$version)"
+            exit 1
+          fi
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
+      - name: build
+        run: ./gradlew build
+      - name: create github release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" build/libs/*.jar \
+            --title "Quiet Air $GITHUB_REF_NAME" \
+            --generate-notes \
+            --verify-tag
